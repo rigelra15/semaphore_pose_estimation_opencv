@@ -21,7 +21,7 @@ landmark_names = {
     30: "right_heel", 31: "left_foot_index", 32: "right_foot_index"
 }
 
-folder_name = "semaphore poses"
+folder_name = "semaphore_poses"
 os.makedirs(folder_name, exist_ok=True)
 
 def save_landmarks_to_json(landmarks, selected_letter):

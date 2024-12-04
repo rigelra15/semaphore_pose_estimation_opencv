@@ -1,6 +1,10 @@
-# Semaphore Pose Capture
+# Semaphore Pose Estimation using MediaPipe
 
-A Python project to capture and save human pose landmarks based on semaphore poses using the MediaPipe library. The captured pose data is saved as JSON files and can be used for further analysis or comparison.
+A Python project to capture, analyze, and compare human pose landmarks based on semaphore poses using the MediaPipe library. The captured pose data is saved as JSON files and can be used for further analysis or comparison.
+
+**Semaphore** in this context refers to the signaling system used in scouting (Pramuka) to communicate messages over long distances using two flags. The flags are held in specific positions to represent different letters of the alphabet, allowing scouts to send messages without speaking.
+
+![semaphore-pict](semaphore.gif)
 
 ## Features
 

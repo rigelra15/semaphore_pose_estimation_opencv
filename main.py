@@ -3,13 +3,11 @@ import mediapipe as mp
 import json
 import math
 import os
-import re  # Import regular expression module
+import re
 
-# Inisialisasi MediaPipe pose dan Drawing
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-# Fungsi untuk membaca landmark dari file JSON
 def read_landmarks_from_json(filename):
     landmarks = []
     with open(filename, 'r') as file:
@@ -20,16 +18,13 @@ def read_landmarks_from_json(filename):
                 landmarks.append([landmark["x"], landmark["y"], landmark["z"]])
     return landmarks
 
-# Fungsi untuk mencetak landmark
 def print_landmarks(landmarks):
     for idx, landmark in enumerate(landmarks):
         print(f"Landmark {idx}: {landmark}")
 
-# Fungsi untuk menghitung jarak Euclidean antara dua titik 3D
 def euclidean_distance(p1, p2):
     return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 + (p1[2] - p2[2]) ** 2)
 
-# Fungsi untuk menghitung skor kesamaan antara landmark saat ini dan landmark yang disimpan
 def calculate_similarity(current_landmarks, stored_landmarks):
     total_distance = 0
     for c_landmark, s_landmark in zip(current_landmarks, stored_landmarks):
@@ -38,22 +33,18 @@ def calculate_similarity(current_landmarks, stored_landmarks):
     avg_distance = total_distance / len(current_landmarks)
     return avg_distance
 
-# Fungsi untuk mendeteksi pose dan membandingkannya dengan beberapa file JSON
 def detect_and_compare_pose(folder_name):
-    # Daftar untuk menyimpan landmarks dari semua file JSON di folder
     json_files = [f for f in os.listdir(folder_name) if f.endswith('.json')]
     stored_landmarks_dict = {}
 
-    # Membaca semua file JSON
     for json_file in json_files:
         file_path = os.path.join(folder_name, json_file)
         stored_landmarks_dict[json_file] = read_landmarks_from_json(file_path)
 
     cap = cv2.VideoCapture(0)
 
-    # Menetapkan window dengan ukuran lebih besar
-    cv2.namedWindow("Pose Estimation", cv2.WINDOW_NORMAL)  # Membuat window yang bisa diubah ukurannya
-    cv2.resizeWindow("Pose Estimation", 900, 700)  # Menyesuaikan ukuran window
+    cv2.namedWindow("Pose Estimation", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Pose Estimation", 900, 700)
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
@@ -82,41 +73,33 @@ def detect_and_compare_pose(folder_name):
                 for landmark in results.pose_landmarks.landmark:
                     current_landmarks.append([landmark.x, landmark.y, landmark.z])
 
-                # Perbandingan dengan setiap file JSON
                 similarity_scores = {}
                 for json_file, stored_landmarks in stored_landmarks_dict.items():
                     similarity_score = calculate_similarity(current_landmarks, stored_landmarks)
                     similarity_scores[json_file] = similarity_score
 
-                # Menampilkan hasil perbandingan dengan file JSON tertentu
                 min_similarity_score = min(similarity_scores.values())
                 best_match_file = [k for k, v in similarity_scores.items() if v == min_similarity_score][0]
 
-                # Extract huruf (misalnya 'A') dari nama file (contoh: 'semaphore_pose_A.json')
                 match_letter = re.search(r'_(\w)\.json', best_match_file)
                 if match_letter:
-                    match_letter = match_letter.group(1)  # Ambil huruf yang ditemukan
+                    match_letter = match_letter.group(1)
 
                 threshold = 0.2
-                font_scale = 0.7  # Mengubah ukuran font
-                thickness = 1  # Ketebalan teks
+                font_scale = 0.7
+                thickness = 1
                 if min_similarity_score < threshold:
-                    message = f"Pose {match_letter}!"  # Tampilkan hanya huruf
+                    message = f"Pose {match_letter}!"
                 else:
                     message = f"Best Similarity: {min_similarity_score:.2f}"
 
-                # Menambahkan kotak hitam di pojok kiri bawah untuk latar belakang teks
                 text_size = cv2.getTextSize(message, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)[0]
                 text_width, text_height = text_size
 
-                # Menentukan posisi kotak latar belakang (pada pojok kiri bawah)
-                x1, y1 = 20, frame.shape[0] - 50  # Posisi kiri bawah
-                x2, y2 = x1 + text_width + 20, y1 - text_height - 10  # Menghitung lebar kotak sesuai teks
+                x1, y1 = 20, frame.shape[0] - 50
+                x2, y2 = x1 + text_width + 20, y1 - text_height - 10
 
-                # Menggambar kotak hitam
-                cv2.rectangle(image, (x1, y1), (x2, y2), (0, 0, 0), -1)  # Menggambar kotak hitam
-
-                # Menampilkan teks di dalam kotak hitam
+                cv2.rectangle(image, (x1, y1), (x2, y2), (0, 0, 0), -1)
                 cv2.putText(image, message, (x1 + 10, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), thickness)
 
             cv2.imshow('Pose Estimation', image)
@@ -127,6 +110,5 @@ def detect_and_compare_pose(folder_name):
     cap.release()
     cv2.destroyAllWindows()
 
-# Menjalankan deteksi dan perbandingan pose dengan semua file JSON di folder
 folder_name = "semaphore_poses"
 detect_and_compare_pose(folder_name)
