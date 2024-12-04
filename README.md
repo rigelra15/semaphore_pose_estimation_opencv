@@ -6,6 +6,12 @@ A Python project to capture, analyze, and compare human pose landmarks based on 
 
 ![semaphore-pict](semaphore.gif)
 
+## Abstract
+
+This project aims to capture and analyze human pose landmarks based on semaphore poses using the MediaPipe library. The system detects human body landmarks using the MediaPipe Pose module and captures the pose data for each semaphore letter (A-Z). The captured pose data is saved as JSON files in the `semaphore poses` folder and can be used for further analysis or comparison.
+
+The system provides a graphical user interface (GUI) built with `customtkinter` for a user-friendly interface. Users can select images and save captured poses based on the selected semaphore letter. The system also provides functionality to test and capture semaphore poses based on predefined letters and compares the captured pose against those stored in JSON files.
+
 ## Features
 
 - **Pose Detection**: Uses the MediaPipe Pose module to detect human body landmarks.
